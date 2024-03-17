@@ -3,7 +3,38 @@
 <head>
   <meta charset="utf-8">
   <title>RLC Circuit Calculator</title>
+  <link href="style.css" rel="stylesheet" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bruno+Ace&display=swap" rel="stylesheet">
 </head>
 <body>
+    <h1 class=title>RLC Calculator</h1>
+    
+    <div class="container">
+        <div class="data">
+            <!-- <input type="range" min="1" max="100" value="50" class="slider" id="R_slider"> -->
+            <label for="R_input">R (Ω):</label>
+            <input id="R_input" value="100"/>
+            <br>
+            <label for="R2_input">R2 (Ω):</label>
+            <input id="R2_input" value="100" />
+            <br>
+            <label for="L_input">L (H):</label>
+            <input id="L_input" value="0.001"/>
+            <br>
+            <label for="C_input">C (F):</label>
+            <input id="C_input" value="0.001"/>
+        </div>
+        <div class="circuit">
+            <img src="circuit.png">
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Made by Michał Sojka 193585 i Paweł Reich 193682</p>
+        <p> <i>Gdansk University of Technology</i></p>
+    </div>
 </body>
 </html>

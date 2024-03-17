@@ -1,0 +1,57 @@
+html {
+    background: rgb(43,88,118);
+    background: linear-gradient(90deg, rgba(43,88,118,1) 0%, rgba(78,67,118,1) 100%); 
+
+    margin:0;
+    padding:0;
+    
+}
+
+.title {
+    text-align: center;
+    font-family: Bruno Ace;
+    user-select: none;
+}
+
+.container {
+    width: 100%;
+    text-align: center;
+}
+
+/* Data input styling */
+.data {
+    display:inline-block;
+    width:60%;
+    text-align: right;
+}
+
+.data label {
+    width:20%;
+    user-select: none;
+}
+.data input {
+    width:80%;
+}
+
+/* Circuit diagram styling */
+.circuit {
+    padding-top: 2em;
+    padding-bottom: 2em;
+}
+
+/* Graph styling */
+.container canvas {
+    
+}
+
+
+/* Footer styling */
+.footer {
+    font-family: Bruno Ace;
+    text-align: center;
+    font-size: x-small;
+    position:fixed;
+    left:0;
+    bottom:0;
+    width:100%;
+}
