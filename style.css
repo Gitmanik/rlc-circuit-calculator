@@ -37,13 +37,26 @@ html {
 .circuit {
     padding-top: 2em;
     padding-bottom: 2em;
+    filter: drop-shadow(1px 1px 1px rgba(255,255,255));
+    height:150px
 }
 
-/* Graph styling */
-.container canvas {
-    
+.circuit img {
+    max-width:100%;
+    max-height:100%;
 }
 
+/* Circuit graphs styling */
+.function_graph_container {
+    display: inline-block;
+    height: 150px;
+    /* display: inline; */
+    max-width: 40%;
+}
+
+.bode {
+    height:300px;
+}
 
 /* Footer styling */
 .footer {

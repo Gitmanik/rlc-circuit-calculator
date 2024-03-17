@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <title>RLC Circuit Calculator</title>
   <link href="style.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="main.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,7 +13,7 @@
 </head>
 <body>
     <h1 class=title>RLC Calculator</h1>
-    
+
     <div class="container">
         <div class="data">
             <!-- <input type="range" min="1" max="100" value="50" class="slider" id="R_slider"> -->
@@ -29,6 +31,17 @@
         </div>
         <div class="circuit">
             <img src="circuit.png">
+        </div>
+
+        <div class="function_graph_container"> 
+            <canvas id="input_function"></canvas>
+        </div>
+        <div class="function_graph_container">
+            <canvas id="output_function"></canvas>
+        </div>
+
+        <div class="bode">
+            <canvas id="bode"></canvas>
         </div>
     </div>
     
