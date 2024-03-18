@@ -7,6 +7,8 @@ var r2_input;
 var l_input;
 var c_input;
 
+var previousValues = {};
+
 window.addEventListener('load', async function()
 {
     MicroModal.init();
@@ -28,12 +30,31 @@ function load_globals()
     bode_chart = new Chart(document.getElementById('bode'), bode_chart_config);
 }
 
+function save_previous_value(e) {
+    previousValues[e.target.id] = e.target.value;
+}
+
+function check_value_and_calculate(e) {
+    if (!check_values())
+    {
+        MicroModal.show('modal-wrong-value');
+        e.target.value = previousValues[e.target.id];
+        return;
+    }
+    calculate();
+}
+
 function setup_events()
 {
-    r_input.onkeyup = calculate;
-    r2_input.onkeyup = calculate;
-    l_input.onkeyup = calculate;
-    c_input.onkeyup = calculate;
+    r_input.onkeydown = save_previous_value;
+    r2_input.onkeydown = save_previous_value;
+    l_input.onkeydown = save_previous_value;
+    c_input.onkeydown = save_previous_value;
+
+    r_input.onkeyup = check_value_and_calculate;
+    r2_input.onkeyup = check_value_and_calculate;
+    l_input.onkeyup = check_value_and_calculate;
+    c_input.onkeyup = check_value_and_calculate;
 }
 
 function load_default_values()
