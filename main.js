@@ -29,7 +29,10 @@ function load_globals()
 
 function setup_events()
 {
-    
+    r_input.onkeyup = calculate;
+    r2_input.onkeyup = calculate;
+    l_input.onkeyup = calculate;
+    c_input.onkeyup = calculate;
 }
 
 function load_default_values()
@@ -43,6 +46,7 @@ function load_default_values()
 // FIXME: Stub function
 function calculate()
 {
+    console.log("calculating")
     const data = [
         { year: 2010, count: 10 },
         { year: 2011, count: 20 },
