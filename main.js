@@ -11,7 +11,10 @@ window.addEventListener('load', async function()
 
 function load_default_values()
 {
-
+    document.getElementById('R_input').value = default_values.r;
+    document.getElementById('R2_input').value = default_values.r2;
+    document.getElementById('L_input').value = default_values.l;
+    document.getElementById('C_input').value = default_values.c;
 }
 
 function setup_charts()

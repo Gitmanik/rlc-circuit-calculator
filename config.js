@@ -1,3 +1,12 @@
+// Default calculator values
+var default_values = {
+    r: 100,
+    r2: 100,
+    l: 0.001,
+    c: 0.001
+}
+
+// Chart configuration
 var bode_chart_config = {
     type: 'line',
     data: {
@@ -79,13 +88,4 @@ var output_function_config = {
           }
         ]
       }
-}
-
-
-
-var default_values = {
-    r: 100,
-    r2: 100,
-    l: 0.001,
-    c: 0.001
 }
