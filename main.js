@@ -2,26 +2,42 @@ var input_function_chart;
 var output_function_chart;
 var bode_chart;
 
+var r_input;
+var r2_input;
+var l_input;
+var c_input;
+
 window.addEventListener('load', async function()
 {
-    setup_charts();
+    load_globals();
+    setup_events();
     load_default_values();
     calculate();
 });
 
-function load_default_values()
+function load_globals()
 {
-    document.getElementById('R_input').value = default_values.r;
-    document.getElementById('R2_input').value = default_values.r2;
-    document.getElementById('L_input').value = default_values.l;
-    document.getElementById('C_input').value = default_values.c;
-}
-
-function setup_charts()
-{
+    r_input = document.getElementById('R_input');
+    r2_input = document.getElementById('R2_input');
+    l_input = document.getElementById('L_input');
+    c_input = document.getElementById('C_input');
+    
     input_function_chart = new Chart(document.getElementById('input_function'), input_function_config);
     output_function_chart = new Chart(document.getElementById('output_function'), output_function_config);
     bode_chart = new Chart(document.getElementById('bode'), bode_chart_config);
+}
+
+function setup_events()
+{
+    
+}
+
+function load_default_values()
+{
+    r_input.value = default_values.r;
+    r2_input.value = default_values.r2;
+    l_input.value = default_values.l;
+    c_input.value = default_values.c;
 }
 
 // FIXME: Stub function
