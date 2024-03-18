@@ -43,9 +43,24 @@ function load_default_values()
     c_input.value = default_values.c;
 }
 
+function check_values() {
+    if (isNaN(Number(r_input.value)) ||
+        isNaN(Number(r2_input.value)) ||
+        isNaN(Number(l_input.value)) ||
+        isNaN(Number(c_input.value)))
+        return false;
+    return true;
+}
+
 // FIXME: Stub function
 function calculate()
 {
+    if (!check_values())
+    {
+        window.alert("Incorrect values provided. Only numerics allowed");
+        return;
+    }
+    
     console.log("calculating")
     const data = [
         { year: 2010, count: 10 },
