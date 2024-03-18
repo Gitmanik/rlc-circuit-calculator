@@ -72,7 +72,7 @@ var output_function_config = {
         labels: null,
         datasets: [
           {
-            label: 'Input function',
+            label: 'Output function',
             data: null,
             backgroundColor: "darkred",
             borderColor: "red",
