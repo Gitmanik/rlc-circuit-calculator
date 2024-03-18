@@ -68,3 +68,20 @@ html {
     bottom:0;
     width:100%;
 }
+
+/* Micromodal styling patches */
+.modal {
+    font-family: Bruno Ace;
+}
+
+.modal__footer {
+    text-align: center;
+}
+
+.modal__header {
+    justify-content: center;
+}
+
+.modal__title {
+    text-align: center;
+}

@@ -9,6 +9,7 @@ var c_input;
 
 window.addEventListener('load', async function()
 {
+    MicroModal.init();
     load_globals();
     setup_events();
     load_default_values();
@@ -57,7 +58,7 @@ function calculate()
 {
     if (!check_values())
     {
-        window.alert("Incorrect values provided. Only numerics allowed");
+        MicroModal.show('modal-wrong-value');
         return;
     }
     

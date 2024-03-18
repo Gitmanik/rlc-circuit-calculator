@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>RLC Circuit Calculator</title>
+  <link href="micromodal.css" rel="stylesheet" />
   <link href="style.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
@@ -51,5 +52,25 @@
         <p>Made by Michał Sojka 193585 & Paweł Reich 193682</p>
         <p> <i>Gdansk University of Technology</i> </p>
     </div>
+
+  <div class="modal micromodal-slide" id="modal-wrong-value" aria-hidden="true">
+    <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+      <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-wrong-value-title">
+        <header class="modal__header">
+          <h2 class="modal__title" id="modal-wrong-value-title">
+            Wrong value entered
+          </h2>
+        </header>
+        <main class="modal__content" id="modal-wrong-value-content">
+          <p>
+            Only numerical values are allowed
+          </p>
+        </main>
+        <footer class="modal__footer">
+          <button class="modal__btn modal__btn-primary" data-micromodal-close aria-label="Close this dialog window">Close</button>
+        </footer>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
