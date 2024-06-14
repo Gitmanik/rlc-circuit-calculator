@@ -63,7 +63,7 @@ function squareFunction(ampl, freq) {
     return u;
 }
 
-function simulate(ux, a2, a1, a0, b1, b0, total, h) {
+function calculateOutput(ux, a2, a1, a0, b1, b0, total, h) {
 
     var y = new Array(total).fill(0);
 

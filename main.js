@@ -139,7 +139,7 @@ function calculateOutput()
     const a1 = (R+R2)/(C*R*R2);
     const a0 = 1/(L*C);
 
-    var y = simulate(u, -1/L, 1/C, -((R+R2)/(C*R*R2)), 1/L, 0, total, h);
+    var y = calculateOutput(u, -1/L, 1/C, -((R+R2)/(C*R*R2)), 1/L, 0, total, h);
 
     input_function_chart.data.labels = time;
     input_function_chart.data.datasets[0].data = u;
