@@ -9,6 +9,17 @@ var default_values = {
     ampl: 1.0
 }
 
+// Bode plot settings
+const wmax = 20;
+const dw = 0.1;
+const w = math.range(0, wmax + dw, dw).toArray();
+
+//Output function settings
+const h = 0.01;
+const T = 10.0;
+const total = Math.floor(T / h) + 1;
+const time = Array.from({ length: total }, (_, i) => i * h);
+
 // Chart configuration
 var bode_ampl_chart_config = {
     type: 'line',

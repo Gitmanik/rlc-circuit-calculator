@@ -104,9 +104,9 @@ function calculate()
         return;
     }
 
-    const signalType = document.getElementById('Function_type').value;
-    const A = parseFloat(ampl_input.value);
-    const F = parseFloat(freq_input.value);
+    const signalType = function_input.value;
+    const A = ampl_input.value;
+    const F = freq_input.value;
 
     const R = r_input.value;
     const R2 = r2_input.value;
@@ -121,12 +121,12 @@ function calculate()
         squareFunction(A, F);
     }
    
+    // OUTPUT FUNCTION
     const b1 = 0;
     const b0 = 1/(L*C);
     const a2 = 1;
     const a1 = (R+R2)/(C*R*R2);
     const a0 = 1/(L*C);
-
 
     for (let i = 0; i < total - 1; i++) {
         y2p[i] = -(a1 / a2) * y1p[i] - (a0 / a2) * y[i] + (b1 / a2) * u1p[i] + (b0 / a2) * u[i];
@@ -143,15 +143,13 @@ function calculate()
     output_function_chart.update();
 
     
-    const wmax = 20;
-    const dw = 0.1;
-    const w = math.range(0, wmax + dw, dw).toArray();
+    // BODE PLOT
     const j = math.complex(0, 1);
     const Ljw = w.map(omega => {
         var v4 = b0;
         return v4;
     });
-					//ewentualnie zmienic 1 linijke na "math.add(math.pow(math.multiply(j, omega), 2)," i w Ljw i Mjw podzielic wspolczynniki /a2)
+
     const Mjw = w.map(omega => {
         var m1 = math.pow(math.multiply(j, omega), 4);
         var m3 = math.pow(math.multiply(a2, math.multiply(j, omega)), 2);
@@ -207,12 +205,6 @@ function squareFunction(ampl, freq) {
         u1p[i] = 0;
     }
 }
-
-
-const h = 0.01;
-const T = 10.0;
-const total = Math.floor(T / h) + 1;
-const time = Array.from({ length: total }, (_, i) => i * h);
 
 let u = new Array(total).fill(0);
 let u1p = new Array(total).fill(0);
