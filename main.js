@@ -24,6 +24,11 @@ function load_globals()
     r2_input = document.getElementById('R2_input');
     l_input = document.getElementById('L_input');
     c_input = document.getElementById('C_input');
+
+    function_input = document.getElementById('Function_type');
+    ampl_input = document.getElementById('Ampl_input');
+    freq_input = document.getElementById('Freq_input');
+    delay_input = document.getElementById('Delay_input');
     
     input_function_chart = new Chart(document.getElementById('input_function'), input_function_config);
     output_function_chart = new Chart(document.getElementById('output_function'), output_function_config);
@@ -51,11 +56,24 @@ function setup_events()
     r2_input.onkeydown = save_previous_value;
     l_input.onkeydown = save_previous_value;
     c_input.onkeydown = save_previous_value;
+    c_input.onkeydown = save_previous_value;
+
+    ampl_input.onkeydown = save_previous_value;
+    freq_input.onkeydown = save_previous_value;
+    delay_input.onkeydown = save_previous_value;
+    
+
+    ampl_input.onkeyup = check_value_and_calculate;
+    freq_input.onkeyup = check_value_and_calculate;
+    delay_input.onkeyup = check_value_and_calculate;
 
     r_input.onkeyup = check_value_and_calculate;
     r2_input.onkeyup = check_value_and_calculate;
     l_input.onkeyup = check_value_and_calculate;
     c_input.onkeyup = check_value_and_calculate;
+
+    function_input.onchange = check_value_and_calculate;
+
 }
 
 function load_default_values()
@@ -64,13 +82,22 @@ function load_default_values()
     r2_input.value = default_values.r2;
     l_input.value = default_values.l;
     c_input.value = default_values.c;
+
+    ampl_input.value = default_values.ampl;
+    freq_input.value = default_values.freq;
+    delay_input.value = default_values.delay;
+
 }
 
 function check_values() {
     if (isNaN(Number(r_input.value)) ||
         isNaN(Number(r2_input.value)) ||
         isNaN(Number(l_input.value)) ||
-        isNaN(Number(c_input.value)))
+        isNaN(Number(c_input.value)) ||
+        isNaN(Number(ampl_input.value)) ||
+        isNaN(Number(freq_input.value)) ||
+        isNaN(Number(delay_input.value))
+        )
         return false;
     return true;
 }
@@ -83,28 +110,27 @@ function calculate()
         return;
     }
 
-    // const signalType = document.getElementById('signal').value;
-    const signalType = 'square';
+    const signalType = document.getElementById('Function_type').value;
+    const A = parseFloat(ampl_input.value);
+    const F = parseFloat(freq_input.value);
+    const D = parseFloat(delay_input.value);
 
-    if (signalType === 'harmonic') {
-        const L = parseFloat(document.getElementById('L').value);
-        const M = parseFloat(document.getElementById('M').value);
-        harmonicFunction(L, M);
-    } else if (signalType === 'triangle') {
-        const A = parseFloat(document.getElementById('A').value);
-        const F = parseFloat(document.getElementById('F').value);
-        triangleFunction(A, F);
-    } else if (signalType === 'square') {
-        // const AM = parseFloat(document.getElementById('AM').value);
-        // const X = parseFloat(document.getElementById('X').value);
-        // const H = parseFloat(document.getElementById('H').value);
-        squareFunction();
-    }
-   
     const R = r_input.value;
     const R2 = r2_input.value;
     const L = l_input.value;
     const C = c_input.value;
+
+    // const 
+
+    if (signalType === 'harmonic') {
+        harmonicFunction(A, D, F);
+    } else if (signalType === 'triangle') {
+        triangleFunction(A, D, F);
+    } else if (signalType === 'square') {
+        squareFunction(A, D, F);
+    }
+   
+
 
 
     const b1 = 0;
@@ -168,29 +194,25 @@ function calculate()
     bode_phase_chart.update();
 }
 
-function diracDeltaApprox(x, epsilon) {
-    return (1 / (epsilon * Math.sqrt(2 * Math.PI))) * Math.exp(-x * x / (2 * epsilon * epsilon));
-}
 
-function harmonicFunction(L = 2.5, M = 8.0) {
-    const w = 2.0 * Math.PI * L / T;
+function harmonicFunction(ampl, delay, freq) {
+    const w = 2.0 * Math.PI * freq / T;
     for (let i = 0; i < total; i++) {
         const t = i * h;
-        u[i] = M * Math.sin(w * t);
-        u1p[i] = M * w * Math.cos(w * t);
+        u[i] = ampl * Math.sin(w * (t - delay));
+        u1p[i] = ampl * w * Math.cos(w * (t - delay));
     }
 }
 
-function triangleFunction(ampl = 100, freq = 2) {
+function triangleFunction(ampl, delay, freq) {
     for (let i = 0; i < total; i++) {
         const t = i * h;
-        u[i] = ampl * (2 * Math.abs(2 * (t * freq - Math.floor(t * freq + 0.5))) - 1);
-        u1p[i] = 4 * ampl * Math.sign(2 * (t * freq - Math.floor(t * freq + 0.5))) * freq;
-        const deltaArg = t * freq - Math.floor(t * freq + 0.5);
+        u[i] = ampl * (2 * Math.abs(2 * ((t - delay) * freq - Math.floor(t * freq + 0.5))) - 1);
+        u1p[i] = 4 * ampl * Math.sign(2 * ((t - delay) * freq - Math.floor(t * freq + 0.5))) * freq;
     }
 }
 
-function squareFunction(ampl = 5, delay = 0.5, period = 0.5) {
+function squareFunction(ampl, delay, period) {
     for (let i = 0; i < total; i++) {
         const t = i * h;
         u[i] = ampl * Math.sign(Math.sin(2 * Math.PI * period * (t - delay)));

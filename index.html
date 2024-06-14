@@ -19,20 +19,46 @@
     <h1 class=title>RLC Calculator</h1>
 
     <div class="container">
-        <div class="data">
-            <!-- <input type="range" min="1" max="100" value="50" class="slider" id="R_slider"> -->
-            <label for="R_input">R (Ω):</label>
-            <input id="R_input" />
-            <br>
-            <label for="R2_input">R2 (Ω):</label>
-            <input id="R2_input" />
-            <br>
-            <label for="L_input">L (H):</label>
-            <input id="L_input" />
-            <br>
-            <label for="C_input">C (F):</label>
-            <input id="C_input" />
-        </div>
+      <table class="inputtable">
+        <tr>
+          <td>
+            <div class="data">
+              <label for="R_input">R (Ω):</label>
+              <input id="R_input" />
+              <br>
+              <label for="R2_input">R2 (Ω):</label>
+              <input id="R2_input" />
+              <br>
+              <label for="L_input">L (H):</label>
+              <input id="L_input" />
+              <br>
+              <label for="C_input">C (F):</label>
+              <input id="C_input" />
+          </div>
+          </td>
+          <td>
+            <div class="data">
+              <label for="Function_type">Input</label>
+              <select name="Function_type" id="Function_type">
+                <option value="square">Square</option>
+                <option value="harmonic">Harmonic</option>
+                <option value="triangle">Triangle</option>
+              </select>
+              <br>
+              <label for="Ampl_input">Amplitude:</label>
+              <input id="Ampl_input" />
+              <br>
+              <label for="Freq_input">Frequency:</label>
+              <input id="Freq_input" />
+              <br>
+              <label for="Delay_input">Delay:</label>
+              <input id="Delay_input" />
+          </div>
+          </td>
+
+        </tr>
+      </table>
+       
         <div class="circuit">
             <img src="circuit.png">
         </div>

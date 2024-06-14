@@ -3,7 +3,10 @@ var default_values = {
     r: 100,
     r2: 100,
     l: 0.001,
-    c: 0.001
+    c: 0.001,
+    delay: 0.0,
+    freq: 1.0,
+    ampl: 1.0
 }
 
 // Chart configuration
