@@ -131,8 +131,8 @@ function calculate()
     output_function_chart.update();
 
     
-    const wmax = 20;
-    const dw = 0.1;
+    const wmax = 10000;
+    const dw = 10;
     const w = math.range(0, wmax + dw, dw).toArray();
     const j = math.complex(0, 1);
     const Ljw = w.map(omega => math.add(math.multiply(b1, math.multiply(j, omega)),

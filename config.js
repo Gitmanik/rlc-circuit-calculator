@@ -41,9 +41,11 @@ var bode_chart_config = {
                 scaleLabel: {
                     display: false,
                     fontColor: 'white'
-                }
+                },
+                type: 'logarithmic'
             }],
             y1: {
+                type: 'logarithmic',
                 display: true,
                 scaleLabel: {
                     display: true,
