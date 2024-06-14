@@ -106,11 +106,11 @@ function calculate()
     const C = c_input.value;
 
 
-    const b1 = R * R2 * C;
-    const b0 = R * R + R * R2;
-    const a2 = R * R2 * L * C;
-    const a1 = L * R + L * R2;
-    const a0 = R * R2;
+    const b1 = 0;
+    const b0 = -1/(L*C);
+    const a2 = 1;
+    const a1 = (R+R2)/(C*R*R2);
+    const a0 = -1/(L*C);
 
 
     for (let i = 0; i < total - 1; i++) {
@@ -172,7 +172,7 @@ function harmonicFunction(L = 2.5, M = 8.0) {
         const t = i * h;
         u[i] = M * Math.sin(w * t);
         u1p[i] = M * w * Math.cos(w * t);
-        u2p[i] = -M * w * w * Math.sin(w * t);	//chyba useless
+        //u2p[i] = -M * w * w * Math.sin(w * t);	//chyba useless
     }
 }
 
@@ -182,7 +182,7 @@ function triangleFunction(ampl = 100, freq = 2) {
         u[i] = ampl * (2 * Math.abs(2 * (t * freq - Math.floor(t * freq + 0.5))) - 1);
         u1p[i] = 4 * ampl * Math.sign(2 * (t * freq - Math.floor(t * freq + 0.5))) * freq;
         const deltaArg = t * freq - Math.floor(t * freq + 0.5);
-        u2p[i] = 8 * ampl * freq * diracDeltaApprox(deltaArg, 0.001);	//chyba useless
+       // u2p[i] = 8 * ampl * freq * diracDeltaApprox(deltaArg, 0.001);	//chyba useless
     }
 }
 
@@ -191,7 +191,7 @@ function squareFunction(ampl = 5, delay = 0.5, period = 0.5) {
         const t = i * h;
         u[i] = ampl * Math.sign(Math.sin(2 * Math.PI * period * (t - delay)));
         u1p[i] = 0;
-        u2p[i] = 0;	// chyba useless
+        //u2p[i] = 0;	// chyba useless
     }
 }
 
@@ -203,7 +203,7 @@ const time = Array.from({ length: total }, (_, i) => i * h);
 
 let u = new Array(total).fill(0);
 let u1p = new Array(total).fill(0);
-let u2p = new Array(total).fill(0);
+
 let y = new Array(total).fill(0);
 let y1p = new Array(total).fill(0);
 let y2p = new Array(total).fill(0);
