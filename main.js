@@ -70,7 +70,6 @@ function setup_events()
     c_input.onkeyup = check_value_and_calculate;
 
     function_input.onchange = check_value_and_calculate;
-
 }
 
 function load_default_values()
@@ -93,6 +92,15 @@ function check_values() {
         isNaN(Number(freq_input.value))
         )
         return false;
+
+    const R = parseFloat(r_input.value);
+    const R2 = parseFloat(r2_input.value);
+    const L = parseFloat(l_input.value);
+    const C = parseFloat(c_input.value);
+    const F = parseFloat(freq_input.value);
+
+    if (R == 0 || R2 == 0 || L == 0 || C == 0 || F == 0)
+        return false;
     return true;
 }
 
@@ -105,20 +113,22 @@ function calculate()
     }
 
     const signalType = function_input.value;
-    const A = ampl_input.value;
-    const F = freq_input.value;
+    const A = parseFloat(ampl_input.value);
+    const F = parseFloat(freq_input.value);
 
-    const R = r_input.value;
-    const R2 = r2_input.value;
-    const L = l_input.value;
-    const C = c_input.value;
+    const R = parseFloat(r_input.value);
+    const R2 = parseFloat(r2_input.value);
+    const L = parseFloat(l_input.value);
+    const C = parseFloat(c_input.value);
+
+    var u, u1p;
 
     if (signalType === 'harmonic') {
-        harmonicFunction(A, F);
+        u, u1p = harmonicFunction(A, F);
     } else if (signalType === 'triangle') {
-        triangleFunction(A, F);
+        u, u1p = triangleFunction(A, F);
     } else if (signalType === 'square') {
-        squareFunction(A, F);
+        u = squareFunction(A, F);
     }
    
     // OUTPUT FUNCTION
@@ -128,11 +138,7 @@ function calculate()
     const a1 = (R+R2)/(C*R*R2);
     const a0 = 1/(L*C);
 
-    for (let i = 0; i < total - 1; i++) {
-        y2p[i] = -(a1 / a2) * y1p[i] - (a0 / a2) * y[i] + (b1 / a2) * u1p[i] + (b0 / a2) * u[i];
-        y1p[i + 1] = y1p[i] + h * y2p[i];
-        y[i + 1] = y[i] + h * y1p[i] + (h * h / 2.0) * y2p[i];
-    }
+    var y = simulate(u, -1/L, 1/C, -((R+R2)/(C*R*R2)), 1/L, 0, total, h);
 
     input_function_chart.data.labels = time;
     input_function_chart.data.datasets[0].data = u;
@@ -173,42 +179,84 @@ function calculate()
     Aw.shift(0);
 
     bode_ampl_chart.data.labels = w.map( x => x.toFixed(1));
-    bode_ampl_chart.data.datasets[0].data = Aw;
+    bode_ampl_chart.data.datasets[0].data = Aw.map(x => math.multiply(x, 1000));
     bode_ampl_chart.update();
     bode_phase_chart.data.labels = w.map( x => x.toFixed(1));
-    bode_phase_chart.data.datasets[0].data = Fw;
+    bode_phase_chart.data.datasets[0].data = Fw.map(x => math.multiply(x, 1000));
     bode_phase_chart.update();
 }
 
 
 function harmonicFunction(ampl, freq) {
-    const w = 2.0 * Math.PI * freq / T;
+    var u = new Array(total).fill(0);
+    var u1p = new Array(total).fill(0);
+    const w = 2.0 * Math.PI * freq;
     for (let i = 0; i < total; i++) {
         const t = i * h;
         u[i] = ampl * Math.sin(w * t);
         u1p[i] = ampl * w * Math.cos(w * t);
     }
+    return u, u1p;
 }
 
 function triangleFunction(ampl, freq) {
+    var u = new Array(total).fill(0);
+    var u1p = new Array(total).fill(0);
     for (let i = 0; i < total; i++) {
         const t = i * h;
         u[i] = ampl * (2 * Math.abs(2 * (t * freq - Math.floor(t * freq + 0.5))) - 1);
         u1p[i] = 4 * ampl * Math.sign(2 * ((t * freq - Math.floor(t * freq + 0.5))) * freq);
     }
+    return u, u1p;
 }
 
 function squareFunction(ampl, freq) {
+    var u = new Array(total).fill(0);
+    var u1p = new Array(total).fill(0);
     for (let i = 0; i < total; i++) {
         const t = i * h;
         u[i] = ampl * Math.sign(Math.sin(2 * Math.PI * 1/freq * t));
-        u1p[i] = 0;
     }
+    return u;
 }
 
-let u = new Array(total).fill(0);
-let u1p = new Array(total).fill(0);
+function simulate(ux, a2, a1, a0, b1, b0, total, h) {
 
-let y = new Array(total).fill(0);
-let y1p = new Array(total).fill(0);
-let y2p = new Array(total).fill(0);
+    var y = new Array(total).fill(0);
+
+    // Define matrices and vectors using math.js
+    let A = math.matrix([
+        [0, a2],
+        [a0, a1]
+    ]);
+    let B = math.matrix([b1, b0]);
+    let C = math.matrix([0, 1]);
+    let D = math.matrix([0]);
+
+    // Initial state vector
+    let xi_1 = math.matrix([[0],[0]]);
+
+    for (let i = 0; i < total; i++) {
+
+        // Calculate Ax
+        let Ax = math.multiply(A, xi_1);
+        // Calculate Bu
+        let Bu = math.multiply(B, ux[i]);
+        // Calculate Cx
+        let Cx = math.multiply(C, xi_1);
+        // Calculate Du
+        let Du = math.multiply(D, ux[i]);
+
+        // Update state vector xi
+        let xi = math.add(Ax, Bu);
+        xi = math.multiply(xi, h);
+        xi = math.add(xi_1, xi);
+
+        // Update previous state
+        xi_1 = xi;
+        
+        // Update output
+        y[i] = math.add(Cx, Du).get([0]);
+    }
+    return y;
+}

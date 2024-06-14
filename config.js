@@ -27,7 +27,7 @@ var bode_ampl_chart_config = {
         labels: [],
         datasets: [
         {
-            label: 'Amplitude',
+            label: 'Amplitude [dB * 1000]',
             backgroundColor: "rgb(255, 99, 255)",
             borderColor: "rgb(255, 99, 255)",
             fill: false,
@@ -68,7 +68,7 @@ var bode_phase_chart_config = {
         labels: [],
         datasets: [
         {
-            label: 'Phase',
+            label: 'Phase [φ*1000]',
             backgroundColor: "powderblue",
             borderColor: "powderblue",
             fill: false,
