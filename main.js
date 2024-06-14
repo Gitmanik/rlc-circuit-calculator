@@ -28,7 +28,6 @@ function load_globals()
     function_input = document.getElementById('Function_type');
     ampl_input = document.getElementById('Ampl_input');
     freq_input = document.getElementById('Freq_input');
-    delay_input = document.getElementById('Delay_input');
     
     input_function_chart = new Chart(document.getElementById('input_function'), input_function_config);
     output_function_chart = new Chart(document.getElementById('output_function'), output_function_config);
@@ -60,12 +59,10 @@ function setup_events()
 
     ampl_input.onkeydown = save_previous_value;
     freq_input.onkeydown = save_previous_value;
-    delay_input.onkeydown = save_previous_value;
     
 
     ampl_input.onkeyup = check_value_and_calculate;
     freq_input.onkeyup = check_value_and_calculate;
-    delay_input.onkeyup = check_value_and_calculate;
 
     r_input.onkeyup = check_value_and_calculate;
     r2_input.onkeyup = check_value_and_calculate;
@@ -85,8 +82,6 @@ function load_default_values()
 
     ampl_input.value = default_values.ampl;
     freq_input.value = default_values.freq;
-    delay_input.value = default_values.delay;
-
 }
 
 function check_values() {
@@ -95,8 +90,7 @@ function check_values() {
         isNaN(Number(l_input.value)) ||
         isNaN(Number(c_input.value)) ||
         isNaN(Number(ampl_input.value)) ||
-        isNaN(Number(freq_input.value)) ||
-        isNaN(Number(delay_input.value))
+        isNaN(Number(freq_input.value))
         )
         return false;
     return true;
@@ -113,26 +107,20 @@ function calculate()
     const signalType = document.getElementById('Function_type').value;
     const A = parseFloat(ampl_input.value);
     const F = parseFloat(freq_input.value);
-    const D = parseFloat(delay_input.value);
 
     const R = r_input.value;
     const R2 = r2_input.value;
     const L = l_input.value;
     const C = c_input.value;
 
-    // const 
-
     if (signalType === 'harmonic') {
-        harmonicFunction(A, D, F);
+        harmonicFunction(A, F);
     } else if (signalType === 'triangle') {
-        triangleFunction(A, D, F);
+        triangleFunction(A, F);
     } else if (signalType === 'square') {
-        squareFunction(A, D, F);
+        squareFunction(A, F);
     }
    
-
-
-
     const b1 = 0;
     const b0 = 1/(L*C);
     const a2 = 1;
@@ -186,36 +174,36 @@ function calculate()
     Fw.shift(0);
     Aw.shift(0);
 
-    bode_ampl_chart.data.labels = w;
-    bode_ampl_chart.data.datasets[0].data = Aw.map( x=>  math.multiply(x, 1));
+    bode_ampl_chart.data.labels = w.map( x => x.toFixed(1));
+    bode_ampl_chart.data.datasets[0].data = Aw;
     bode_ampl_chart.update();
-    bode_phase_chart.data.labels = w;
-    bode_phase_chart.data.datasets[0].data = Fw.map( x => math.multiply(x, 1));
+    bode_phase_chart.data.labels = w.map( x => x.toFixed(1));
+    bode_phase_chart.data.datasets[0].data = Fw;
     bode_phase_chart.update();
 }
 
 
-function harmonicFunction(ampl, delay, freq) {
+function harmonicFunction(ampl, freq) {
     const w = 2.0 * Math.PI * freq / T;
     for (let i = 0; i < total; i++) {
         const t = i * h;
-        u[i] = ampl * Math.sin(w * (t - delay));
-        u1p[i] = ampl * w * Math.cos(w * (t - delay));
+        u[i] = ampl * Math.sin(w * t);
+        u1p[i] = ampl * w * Math.cos(w * t);
     }
 }
 
-function triangleFunction(ampl, delay, freq) {
+function triangleFunction(ampl, freq) {
     for (let i = 0; i < total; i++) {
         const t = i * h;
-        u[i] = ampl * (2 * Math.abs(2 * ((t - delay) * freq - Math.floor(t * freq + 0.5))) - 1);
-        u1p[i] = 4 * ampl * Math.sign(2 * ((t - delay) * freq - Math.floor(t * freq + 0.5))) * freq;
+        u[i] = ampl * (2 * Math.abs(2 * (t * freq - Math.floor(t * freq + 0.5))) - 1);
+        u1p[i] = 4 * ampl * Math.sign(2 * ((t * freq - Math.floor(t * freq + 0.5))) * freq);
     }
 }
 
-function squareFunction(ampl, delay, period) {
+function squareFunction(ampl, freq) {
     for (let i = 0; i < total; i++) {
         const t = i * h;
-        u[i] = ampl * Math.sign(Math.sin(2 * Math.PI * period * (t - delay)));
+        u[i] = ampl * Math.sign(Math.sin(2 * Math.PI * 1/freq * t));
         u1p[i] = 0;
     }
 }
