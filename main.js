@@ -107,10 +107,10 @@ function calculate()
 
 
     const b1 = 0;
-    const b0 = -1/(L*C);
+    const b0 = 1/(L*C);
     const a2 = 1;
     const a1 = (R+R2)/(C*R*R2);
-    const a0 = -1/(L*C);
+    const a0 = 1/(L*C);
 
 
     for (let i = 0; i < total - 1; i++) {
