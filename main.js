@@ -12,13 +12,13 @@ var previousValues = {};
 window.addEventListener('load', async function()
 {
     MicroModal.init();
-    load_globals();
-    setup_events();
-    load_default_values();
-    calculate();
+    loadGlobals();
+    setupEvents();
+    loadDefaultValues();
+    calculateOutput();
 });
 
-function load_globals()
+function loadGlobals()
 {
     r_input = document.getElementById('R_input');
     r2_input = document.getElementById('R2_input');
@@ -35,44 +35,44 @@ function load_globals()
     bode_phase_chart = new Chart(document.getElementById('bode_phase'), bode_phase_chart_config);
 }
 
-function save_previous_value(e) {
+function savePreviousValue(e) {
     previousValues[e.target.id] = e.target.value;
 }
 
-function check_value_and_calculate(e) {
-    if (!check_values())
+function checkValueAndCalculate(e) {
+    if (!checkValues())
     {
         MicroModal.show('modal-wrong-value');
         e.target.value = previousValues[e.target.id];
         return;
     }
-    calculate();
+    calculateOutput();
 }
 
-function setup_events()
+function setupEvents()
 {
-    r_input.onkeydown = save_previous_value;
-    r2_input.onkeydown = save_previous_value;
-    l_input.onkeydown = save_previous_value;
-    c_input.onkeydown = save_previous_value;
-    c_input.onkeydown = save_previous_value;
+    r_input.onkeydown = savePreviousValue;
+    r2_input.onkeydown = savePreviousValue;
+    l_input.onkeydown = savePreviousValue;
+    c_input.onkeydown = savePreviousValue;
+    c_input.onkeydown = savePreviousValue;
 
-    ampl_input.onkeydown = save_previous_value;
-    freq_input.onkeydown = save_previous_value;
+    ampl_input.onkeydown = savePreviousValue;
+    freq_input.onkeydown = savePreviousValue;
     
 
-    ampl_input.onkeyup = check_value_and_calculate;
-    freq_input.onkeyup = check_value_and_calculate;
+    ampl_input.onkeyup = checkValueAndCalculate;
+    freq_input.onkeyup = checkValueAndCalculate;
 
-    r_input.onkeyup = check_value_and_calculate;
-    r2_input.onkeyup = check_value_and_calculate;
-    l_input.onkeyup = check_value_and_calculate;
-    c_input.onkeyup = check_value_and_calculate;
+    r_input.onkeyup = checkValueAndCalculate;
+    r2_input.onkeyup = checkValueAndCalculate;
+    l_input.onkeyup = checkValueAndCalculate;
+    c_input.onkeyup = checkValueAndCalculate;
 
-    function_input.onchange = check_value_and_calculate;
+    function_input.onchange = checkValueAndCalculate;
 }
 
-function load_default_values()
+function loadDefaultValues()
 {
     r_input.value = default_values.r;
     r2_input.value = default_values.r2;
@@ -83,7 +83,7 @@ function load_default_values()
     freq_input.value = default_values.freq;
 }
 
-function check_values() {
+function checkValues() {
     if (isNaN(Number(r_input.value)) ||
         isNaN(Number(r2_input.value)) ||
         isNaN(Number(l_input.value)) ||
@@ -101,12 +101,13 @@ function check_values() {
 
     if (R == 0 || R2 == 0 || L == 0 || C == 0 || F == 0)
         return false;
+    
     return true;
 }
 
-function calculate()
+function calculateOutput()
 {
-    if (!check_values())
+    if (!checkValues())
     {
         MicroModal.show('modal-wrong-value');
         return;
