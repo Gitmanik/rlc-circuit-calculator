@@ -1,6 +1,6 @@
 var input_function_chart;
 var output_function_chart;
-var bode_chart;
+var bode_ampl_chart, bode_phase_chart;
 
 var r_input;
 var r2_input;
@@ -27,7 +27,8 @@ function load_globals()
     
     input_function_chart = new Chart(document.getElementById('input_function'), input_function_config);
     output_function_chart = new Chart(document.getElementById('output_function'), output_function_config);
-    bode_chart = new Chart(document.getElementById('bode'), bode_chart_config);
+    bode_ampl_chart = new Chart(document.getElementById('bode_ampl'), bode_ampl_chart_config);
+    bode_phase_chart = new Chart(document.getElementById('bode_phase'), bode_phase_chart_config);
 }
 
 function save_previous_value(e) {
@@ -118,9 +119,6 @@ function calculate()
         y1p[i + 1] = y1p[i] + h * y2p[i];
         y[i + 1] = y[i] + h * y1p[i] + (h * h / 2.0) * y2p[i];
     }
-    // console.log(time);
-    console.log(u);
-    console.log(y);
 
     input_function_chart.data.labels = time;
     input_function_chart.data.datasets[0].data = u;
@@ -131,16 +129,22 @@ function calculate()
     output_function_chart.update();
 
     
-    const wmax = 10000;
-    const dw = 10;
+    const wmax = 20;
+    const dw = 0.1;
     const w = math.range(0, wmax + dw, dw).toArray();
     const j = math.complex(0, 1);
-    const Ljw = w.map(omega => math.add(math.multiply(b1, math.multiply(j, omega)),
-                                       b0));
+    const Ljw = w.map(omega => {
+        var v4 = b0;
+        return v4;
+    });
 					//ewentualnie zmienic 1 linijke na "math.add(math.pow(math.multiply(j, omega), 2)," i w Ljw i Mjw podzielic wspolczynniki /a2)
-    const Mjw = w.map(omega => math.add(math.multiply(a2, math.pow(math.multiply(j, omega), 2)),
-                                        math.multiply(a1, math.multiply(j, omega)),
-                                        a0));
+    const Mjw = w.map(omega => {
+        var m1 = math.pow(math.multiply(j, omega), 4);
+        var m3 = math.pow(math.multiply(a2, math.multiply(j, omega)), 2);
+        var m4 = math.multiply(a1, math.multiply(j, omega));
+        var m5 = a0;
+        return math.add(m1, m3, m4, m5);
+    });
 
     const Hjw = Ljw.map((Ljw_i, index) => math.divide(Ljw_i, Mjw[index]));
 
@@ -153,13 +157,15 @@ function calculate()
         }
     }
 
-    console.log(Aw);
-    console.log(Fw);
+    Fw.shift(0);
+    Aw.shift(0);
 
-    bode_chart.data.labels = w;
-    bode_chart.data.datasets[0].data = Aw;
-    bode_chart.data.datasets[1].data = Fw;
-    bode_chart.update();
+    bode_ampl_chart.data.labels = w;
+    bode_ampl_chart.data.datasets[0].data = Aw.map( x=>  math.multiply(x, 1));
+    bode_ampl_chart.update();
+    bode_phase_chart.data.labels = w;
+    bode_phase_chart.data.datasets[0].data = Fw.map( x => math.multiply(x, 1));
+    bode_phase_chart.update();
 }
 
 function diracDeltaApprox(x, epsilon) {
@@ -172,7 +178,6 @@ function harmonicFunction(L = 2.5, M = 8.0) {
         const t = i * h;
         u[i] = M * Math.sin(w * t);
         u1p[i] = M * w * Math.cos(w * t);
-        //u2p[i] = -M * w * w * Math.sin(w * t);	//chyba useless
     }
 }
 
@@ -182,7 +187,6 @@ function triangleFunction(ampl = 100, freq = 2) {
         u[i] = ampl * (2 * Math.abs(2 * (t * freq - Math.floor(t * freq + 0.5))) - 1);
         u1p[i] = 4 * ampl * Math.sign(2 * (t * freq - Math.floor(t * freq + 0.5))) * freq;
         const deltaArg = t * freq - Math.floor(t * freq + 0.5);
-       // u2p[i] = 8 * ampl * freq * diracDeltaApprox(deltaArg, 0.001);	//chyba useless
     }
 }
 
@@ -191,7 +195,6 @@ function squareFunction(ampl = 5, delay = 0.5, period = 0.5) {
         const t = i * h;
         u[i] = ampl * Math.sign(Math.sin(2 * Math.PI * period * (t - delay)));
         u1p[i] = 0;
-        //u2p[i] = 0;	// chyba useless
     }
 }
 

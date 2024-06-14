@@ -7,18 +7,13 @@ var default_values = {
 }
 
 // Chart configuration
-var bode_chart_config = {
+var bode_ampl_chart_config = {
     type: 'line',
     data: {
         labels: [],
-        datasets: [{
-            label: 'Amplitude',
-            backgroundColor: "powderblue",
-            borderColor: "powderblue",
-            fill: false
-        },
+        datasets: [
         {
-            label: 'Phase',
+            label: 'Amplitude',
             backgroundColor: "rgb(255, 99, 255)",
             borderColor: "rgb(255, 99, 255)",
             fill: false,
@@ -27,38 +22,68 @@ var bode_chart_config = {
     options: {
         maintainAspectRatio: false,
         responsive: true,
-        title: {
-            text: 'test',
-            display: true
-        },
         interaction: {
             intersect: false,
             mode: 'index',
           },
         scales: {
-            xAxes: [{
+            x: {
                 display: true,
                 scaleLabel: {
                     display: false,
                     fontColor: 'white'
                 },
-                type: 'logarithmic'
-            }],
-            y1: {
-                type: 'logarithmic',
-                display: true,
-                scaleLabel: {
-                    display: true,
-                    labelString: '°C'
-                }
+                // type: 'logarithmic'
             },
-            y2: {
-                type: 'logarithmic',
+            y: {
+                beginAtZero: false, // Set this to false to start y-axis from the minimum value of the dataset
+                // type: 'logarithmic',
                 display: true,
                 position: 'right',
                 grid: {
                     drawOnChartArea: false, // only want the grid lines for one axis to show up
+                }
+            }
+        }
+    }
+};
+
+var bode_phase_chart_config = {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [
+        {
+            label: 'Phase',
+            backgroundColor: "powderblue",
+            borderColor: "powderblue",
+            fill: false,
+        }]
+    },
+    options: {
+        maintainAspectRatio: false,
+        responsive: true,
+        interaction: {
+            intersect: false,
+            mode: 'index',
+          },
+        scales: {
+            x: {
+                display: true,
+                scaleLabel: {
+                    display: false,
+                    fontColor: 'white'
                 },
+                // type: 'logarithmic'
+            },
+            y: {
+                beginAtZero: false, // Set this to false to start y-axis from the minimum value of the dataset
+                // type: 'logarithmic',
+                display: true,
+                position: 'right',
+                grid: {
+                    drawOnChartArea: false, // only want the grid lines for one axis to show up
+                }
             }
         }
     }
