@@ -74,7 +74,6 @@ function check_values() {
     return true;
 }
 
-// FIXME: Stub function
 function calculate()
 {
     if (!check_values())
@@ -82,30 +81,129 @@ function calculate()
         MicroModal.show('modal-wrong-value');
         return;
     }
-    
-    console.log("calculating")
-    const data = [
-        { year: 2010, count: 10 },
-        { year: 2011, count: 20 },
-        { year: 2012, count: 15 },
-        { year: 2013, count: 25 },
-        { year: 2014, count: 22 },
-        { year: 2015, count: 30 },
-        { year: 2016, count: 28 },
-      ];
 
-    input_function_chart.data.labels = data.map(row => row.year);
-    input_function_chart.data.datasets[0].data = data.map(row => row.count);
+    // const signalType = document.getElementById('signal').value;
+    const signalType = 'square';
+
+    if (signalType === 'harmonic') {
+        const L = parseFloat(document.getElementById('L').value);
+        const M = parseFloat(document.getElementById('M').value);
+        harmonicFunction(L, M);
+    } else if (signalType === 'triangle') {
+        const A = parseFloat(document.getElementById('A').value);
+        const F = parseFloat(document.getElementById('F').value);
+        triangleFunction(A, F);
+    } else if (signalType === 'square') {
+        // const AM = parseFloat(document.getElementById('AM').value);
+        // const X = parseFloat(document.getElementById('X').value);
+        // const H = parseFloat(document.getElementById('H').value);
+        squareFunction();
+    }
+   
+    const R = r_input.value;
+    const R2 = r2_input.value;
+    const L = l_input.value;
+    const C = c_input.value;
+
+
+    const b1 = R * R2 * C;
+    const b0 = R * R + R * R2;
+    const a2 = R * R2 * L * C;
+    const a1 = L * R + L * R2;
+    const a0 = R * R2;
+
+
+    for (let i = 0; i < total - 1; i++) {
+        y2p[i] = -(a1 / a2) * y1p[i] - (a0 / a2) * y[i] + (b1 / a2) * u1p[i] + (b0 / a2) * u[i];
+        y1p[i + 1] = y1p[i] + h * y2p[i];
+        y[i + 1] = y[i] + h * y1p[i] + (h * h / 2.0) * y2p[i];
+    }
+    // console.log(time);
+    console.log(u);
+    console.log(y);
+
+    input_function_chart.data.labels = time;
+    input_function_chart.data.datasets[0].data = u;
     input_function_chart.update();
-
-    output_function_chart.data.labels = data.map(row => row.year);
-    output_function_chart.data.datasets[0].data = data.map(row => row.count);
+    
+    output_function_chart.data.labels = time;
+    output_function_chart.data.datasets[0].data = y;
     output_function_chart.update();
 
-    data.forEach(n => {
-        bode_chart.data.labels.push(n + "");
-        bode_chart.data.datasets[0].data.push(n.year);
-        bode_chart.data.datasets[1].data.push(n.count);
-    });
+    
+    const wmax = 20;
+    const dw = 0.1;
+    const w = math.range(0, wmax + dw, dw).toArray();
+    const j = math.complex(0, 1);
+    const Ljw = w.map(omega => math.add(math.multiply(b1, math.multiply(j, omega)),
+                                       b0));
+					//ewentualnie zmienic 1 linijke na "math.add(math.pow(math.multiply(j, omega), 2)," i w Ljw i Mjw podzielic wspolczynniki /a2)
+    const Mjw = w.map(omega => math.add(math.multiply(a2, math.pow(math.multiply(j, omega), 2)),
+                                        math.multiply(a1, math.multiply(j, omega)),
+                                        a0));
+
+    const Hjw = Ljw.map((Ljw_i, index) => math.divide(Ljw_i, Mjw[index]));
+
+    const Aw = Hjw.map(Hjw_i => math.abs(Hjw_i));
+    const Fw = Hjw.map(Hjw_i => math.arg(Hjw_i));
+
+    for (let k = 0; k < Fw.length; k++) {
+        if (Fw[k] < 0) {
+            Fw[k] += 2 * Math.PI;
+        }
+    }
+
+    console.log(Aw);
+    console.log(Fw);
+
+    bode_chart.data.labels = w;
+    bode_chart.data.datasets[0].data = Aw;
+    bode_chart.data.datasets[1].data = Fw;
     bode_chart.update();
 }
+
+function diracDeltaApprox(x, epsilon) {
+    return (1 / (epsilon * Math.sqrt(2 * Math.PI))) * Math.exp(-x * x / (2 * epsilon * epsilon));
+}
+
+function harmonicFunction(L = 2.5, M = 8.0) {
+    const w = 2.0 * Math.PI * L / T;
+    for (let i = 0; i < total; i++) {
+        const t = i * h;
+        u[i] = M * Math.sin(w * t);
+        u1p[i] = M * w * Math.cos(w * t);
+        u2p[i] = -M * w * w * Math.sin(w * t);	//chyba useless
+    }
+}
+
+function triangleFunction(ampl = 100, freq = 2) {
+    for (let i = 0; i < total; i++) {
+        const t = i * h;
+        u[i] = ampl * (2 * Math.abs(2 * (t * freq - Math.floor(t * freq + 0.5))) - 1);
+        u1p[i] = 4 * ampl * Math.sign(2 * (t * freq - Math.floor(t * freq + 0.5))) * freq;
+        const deltaArg = t * freq - Math.floor(t * freq + 0.5);
+        u2p[i] = 8 * ampl * freq * diracDeltaApprox(deltaArg, 0.001);	//chyba useless
+    }
+}
+
+function squareFunction(ampl = 5, delay = 0.5, period = 0.5) {
+    for (let i = 0; i < total; i++) {
+        const t = i * h;
+        u[i] = ampl * Math.sign(Math.sin(2 * Math.PI * period * (t - delay)));
+        u1p[i] = 0;
+        u2p[i] = 0;	// chyba useless
+    }
+}
+
+
+const h = 0.01;
+const T = 10.0;
+const total = Math.floor(T / h) + 1;
+const time = Array.from({ length: total }, (_, i) => i * h);
+
+let u = new Array(total).fill(0);
+let u1p = new Array(total).fill(0);
+let u2p = new Array(total).fill(0);
+let y = new Array(total).fill(0);
+let y1p = new Array(total).fill(0);
+let y2p = new Array(total).fill(0);
