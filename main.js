@@ -15,7 +15,7 @@ window.addEventListener('load', async function()
     loadGlobals();
     setupEvents();
     loadDefaultValues();
-    calculateOutput();
+    calculate();
 });
 
 function loadGlobals()
@@ -46,7 +46,7 @@ function checkValueAndCalculate(e) {
         e.target.value = previousValues[e.target.id];
         return;
     }
-    calculateOutput();
+    calculate();
 }
 
 function setupEvents()
@@ -105,8 +105,11 @@ function checkValues() {
     return true;
 }
 
-function calculateOutput()
+function calculate()
 {
+    const total = Math.floor(T / h) + 1;
+    const time = Array.from({ length: total }, (_, i) => i * h);
+
     if (!checkValues())
     {
         MicroModal.show('modal-wrong-value');
@@ -125,11 +128,11 @@ function calculateOutput()
     var u, u1p;
 
     if (signalType === 'harmonic') {
-        u, u1p = sinFunction(A, F);
+        u = sinFunction(total, A, F);
     } else if (signalType === 'triangle') {
-        u, u1p = triangleFunction(A, F);
+        u = triangleFunction(total, A, F);
     } else if (signalType === 'square') {
-        u = squareFunction(A, F);
+        u = squareFunction(total, A, F);
     }
    
     // OUTPUT FUNCTION
@@ -139,17 +142,30 @@ function calculateOutput()
     const a1 = (R+R2)/(C*R*R2);
     const a0 = 1/(L*C);
 
-    var y = calculateOutput(u, -1/L, 1/C, -((R+R2)/(C*R*R2)), 1/L, 0, total, h);
+    // var y = calculateOutput(u, -1/L, 1/C, -((R+R2)/(C*R*R2)), 1/L, 0, total, h);
+
+    var y = calculateOutput(u, 
+        math.matrix([
+            [0, 1], 
+            [(-1/(C*L)), (-(R+R2)/(C*R*R2))]
+        ]), 
+    math.matrix([[0], [1]]),
+    math.matrix([(1/(C*L)), 0]),
+    math.matrix([0]), 
+    total, h);
 
     input_function_chart.data.labels = time;
     input_function_chart.data.datasets[0].data = u;
     input_function_chart.update();
-    
+
+    console.log(y._data);
+
     output_function_chart.data.labels = time;
-    output_function_chart.data.datasets[0].data = y;
+    output_function_chart.data.datasets[0].data = y.toArray();
     output_function_chart.update();
 
-    const { Aw, Fw } = bodePlot(b0, a2, a1, a0);
+    const w = math.range(0, wmax + dw, dw).toArray();
+    const { Aw, Fw } = bodePlot(w, b0, a2, a1, a0);
 
     bode_ampl_chart.data.labels = w.map( x => x.toFixed(1));
     bode_ampl_chart.data.datasets[0].data = Aw.map(x => math.multiply(x, 1000));

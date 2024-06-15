@@ -1,5 +1,6 @@
 
-function bodePlot(b0, a2, a1, a0) {
+function bodePlot(w, b0, a2, a1, a0) {
+
     const j = math.complex(0, 1);
     const Ljw = w.map(omega => {
         var v4 = b0;
@@ -30,7 +31,7 @@ function bodePlot(b0, a2, a1, a0) {
     return { Aw, Fw };
 }
 
-function sinFunction(ampl, freq) {
+function sinFunction(total, ampl, freq) {
     var u = new Array(total).fill(0);
     var u1p = new Array(total).fill(0);
     const w = 2.0 * Math.PI * freq;
@@ -39,10 +40,10 @@ function sinFunction(ampl, freq) {
         u[i] = ampl * Math.sin(w * t);
         u1p[i] = ampl * w * Math.cos(w * t);
     }
-    return u, u1p;
+    return u;
 }
 
-function triangleFunction(ampl, freq) {
+function triangleFunction(total, ampl, freq) {
     var u = new Array(total).fill(0);
     var u1p = new Array(total).fill(0);
     for (let i = 0; i < total; i++) {
@@ -50,10 +51,10 @@ function triangleFunction(ampl, freq) {
         u[i] = ampl * (2 * Math.abs(2 * (t * freq - Math.floor(t * freq + 0.5))) - 1);
         u1p[i] = 4 * ampl * Math.sign(2 * ((t * freq - Math.floor(t * freq + 0.5))) * freq);
     }
-    return u, u1p;
+    return u;
 }
 
-function squareFunction(ampl, freq) {
+function squareFunction(total, ampl, freq) {
     var u = new Array(total).fill(0);
     var u1p = new Array(total).fill(0);
     for (let i = 0; i < total; i++) {
@@ -63,43 +64,29 @@ function squareFunction(ampl, freq) {
     return u;
 }
 
-function calculateOutput(ux, a2, a1, a0, b1, b0, total, h) {
+function calculateOutput(ux, A, B, C, D, total, h) {
 
-    var y = new Array(total).fill(0);
+    var y = math.zeros(total); // Create a math.js matrix filled with zeros
 
-    // Define matrices and vectors using math.js
-    let A = math.matrix([
-        [0, a2],
-        [a0, a1]
-    ]);
-    let B = math.matrix([b1, b0]);
-    let C = math.matrix([0, 1]);
-    let D = math.matrix([0]);
+    var u = math.matrix(ux);
 
-    // Initial state vector
     let xi_1 = math.matrix([[0],[0]]);
-
+    
     for (let i = 0; i < total; i++) {
 
-        // Calculate Ax
         let Ax = math.multiply(A, xi_1);
-        // Calculate Bu
-        let Bu = math.multiply(B, ux[i]);
-        // Calculate Cx
+        let Bu = math.multiply(B, u.get([i]));
         let Cx = math.multiply(C, xi_1);
-        // Calculate Du
-        let Du = math.multiply(D, ux[i]);
+        let Du = math.multiply(D, u.get([i]));
 
-        // Update state vector xi
         let xi = math.add(Ax, Bu);
         xi = math.multiply(xi, h);
         xi = math.add(xi_1, xi);
 
-        // Update previous state
         xi_1 = xi;
         
-        // Update output
-        y[i] = math.add(Cx, Du).get([0]);
+        y.set([i], math.add(Cx, Du).get([0]));
     }
+    console.log(y);
     return y;
 }
