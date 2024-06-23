@@ -1,4 +1,3 @@
-
 function bodePlot(w, b0, a2, a1, a0) {
 
     const j = math.complex(0, 1);
@@ -8,11 +7,10 @@ function bodePlot(w, b0, a2, a1, a0) {
     });
 
     const Mjw = w.map(omega => {
-        var m1 = math.pow(math.multiply(j, omega), 4);
         var m3 = math.pow(math.multiply(a2, math.multiply(j, omega)), 2);
         var m4 = math.multiply(a1, math.multiply(j, omega));
         var m5 = a0;
-        return math.add(m1, m3, m4, m5);
+        return math.add(m3, m4, m5);
     });
 
     const Hjw = Ljw.map((Ljw_i, index) => math.divide(Ljw_i, Mjw[index]));
@@ -32,44 +30,55 @@ function bodePlot(w, b0, a2, a1, a0) {
 }
 
 function sinFunction(total, ampl, freq) {
-    var u = new Array(total).fill(0);
-    var u1p = new Array(total).fill(0);
+    const u = new Array(total).fill(0);
+    const u1p = new Array(total).fill(0);
     const w = 2.0 * Math.PI * freq;
     for (let i = 0; i < total; i++) {
         const t = i * h;
         u[i] = ampl * Math.sin(w * t);
         u1p[i] = ampl * w * Math.cos(w * t);
     }
-    return u;
+    return {u, u1p};
 }
 
 function triangleFunction(total, ampl, freq) {
-    var u = new Array(total).fill(0);
-    var u1p = new Array(total).fill(0);
+    const u = new Array(total).fill(0);
+    const u1p = new Array(total).fill(0);
     for (let i = 0; i < total; i++) {
         const t = i * h;
         u[i] = ampl * (2 * Math.abs(2 * (t * freq - Math.floor(t * freq + 0.5))) - 1);
         u1p[i] = 4 * ampl * Math.sign(2 * ((t * freq - Math.floor(t * freq + 0.5))) * freq);
     }
-    return u;
+    return {u, u1p};
 }
 
 function squareFunction(total, ampl, freq) {
-    var u = new Array(total).fill(0);
-    var u1p = new Array(total).fill(0);
+    const u = new Array(total).fill(0);
+    const u1p = new Array(total).fill(0);
     for (let i = 0; i < total; i++) {
         const t = i * h;
         u[i] = ampl * Math.sign(Math.sin(2 * Math.PI * 1/freq * t));
     }
-    return u;
+    return {u, u1p};
 }
 
-function calculateOutput(ux, A, B, C, D, total, h) {
+function heavisideFunction(total, A)
+{
+    const u = new Array(total).fill(0);
+    const u1p = new Array(total).fill(0);
+    for (i = 0; i < total; i++)
+    {
+            if (i == 0)
+                u[i] = 0;
+            else u[i] = A;
+    }
+    return {u, u1p};
+}
 
-    var y = math.zeros(total); // Create a math.js matrix filled with zeros
+function calculateStateModel(ux, A, B, C, D, total, h) {
 
+    var y = math.zeros(total);
     var u = math.matrix(ux);
-
     let xi_1 = math.matrix([[0],[0]]);
     
     for (let i = 0; i < total; i++) {
@@ -87,6 +96,19 @@ function calculateOutput(ux, A, B, C, D, total, h) {
         
         y.set([i], math.add(Cx, Du).get([0]));
     }
-    console.log(y);
+    return y;
+}
+
+function calculateTaylor(total, u, u1p, a2, a1, a0, b1, b0, h)
+{
+    var y = math.zeros(total);
+    var y1p = math.zeros(total);
+    var y2p = math.zeros(total);
+
+    for (let i = 0; i < total - 1; i++) {
+        y2p.set([i], ((-a1/a2) * y1p.get([i]) - (a0/a2) * y.get([i]) + (b0/a2) * u[i]));
+        y1p.set([i + 1], y1p.get([i]) + h * y2p.get([i]) );
+        y.set([i + 1], y.get([i]) + h * y1p.get([i]) + (h * h / 2.0) * y2p.get([i]));
+    }
     return y;
 }

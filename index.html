@@ -11,6 +11,7 @@
   <script src="config.js"></script>
   <script src="rlc.js"></script>
   <script src="main.js"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,8 +40,15 @@
           </td>
           <td>
             <div class="data">
+              <label for="Solver_type">Solver</label>
+              <select name="Solver_type" id="Solver_type">
+                <option value="taylor">Taylor</option>
+                <option value="state">State Model</option>
+              </select>
+              <br>
               <label for="Function_type">Input</label>
               <select name="Function_type" id="Function_type">
+                <option value="heaviside">Heaviside</option>
                 <option value="square">Square</option>
                 <option value="harmonic">Harmonic</option>
                 <option value="triangle">Triangle</option>
@@ -61,12 +69,13 @@
             <img src="circuit.png">
         </div>
 
-        <div class="function_graph_container"> 
-            <canvas id="input_function"></canvas>
+        <div class="function_graphs_container">
+          <div class="function_graph_container" id="input_function"> 
+          </div>
+          <div class="function_graph_container" id="output_function">
+          </div>
         </div>
-        <div class="function_graph_container">
-            <canvas id="output_function"></canvas>
-        </div>
+
 
         <div class="bode">
             <canvas id="bode_ampl"></canvas>

@@ -1,9 +1,9 @@
 // Default calculator values
 var default_values = {
-    r: 100,
-    r2: 100,
-    l: 0.001,
-    c: 0.001,
+    r: 10,
+    r2: 25,
+    l: 0.5,
+    c: 0.1,
     delay: 0.0,
     freq: 1.0,
     ampl: 1.0
@@ -18,7 +18,7 @@ const h = 0.01;
 const T = 10.0;
 
 // Chart configuration
-var bode_ampl_chart_config = {
+var bodeAmplitudeChartConfig = {
     type: 'line',
     data: {
         labels: [],
@@ -59,7 +59,7 @@ var bode_ampl_chart_config = {
     }
 };
 
-var bode_phase_chart_config = {
+var bodePhaseChartConfig = {
     type: 'line',
     data: {
         labels: [],
@@ -100,30 +100,24 @@ var bode_phase_chart_config = {
     }
 };
 
-var input_function_config = {
-    type: 'line',
-    data: {
-        labels: null,
-        datasets: [
-          {
-            label: 'Input function',
-            data: null,
-          }
-        ]
-      }
-}
+const inputChartConfig = {
+    title: 'Input Function',
+    xaxis: { title: 'Time (s)' },
+    yaxis: { title: 'Amplitude' },
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {
+        color: 'white'
+    }
+};
 
-var output_function_config = {
-    type: 'line',
-    data: {
-        labels: null,
-        datasets: [
-          {
-            label: 'Output function',
-            data: null,
-            backgroundColor: "darkred",
-            borderColor: "red",
-          }
-        ]
-      }
-}
+const outputChartConfig = {
+    title: 'Output Function',
+    xaxis: { title: 'Time (s)' },
+    yaxis: { title: 'Amplitude' },
+      paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {
+        color: 'white'
+    }
+};

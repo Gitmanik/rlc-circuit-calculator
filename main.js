@@ -7,6 +7,8 @@ var r2_input;
 var l_input;
 var c_input;
 
+var function_input, solver_input;
+
 var previousValues = {};
 
 window.addEventListener('load', async function()
@@ -26,13 +28,14 @@ function loadGlobals()
     c_input = document.getElementById('C_input');
 
     function_input = document.getElementById('Function_type');
+    solver_input = document.getElementById('Solver_type');
     ampl_input = document.getElementById('Ampl_input');
     freq_input = document.getElementById('Freq_input');
     
-    input_function_chart = new Chart(document.getElementById('input_function'), input_function_config);
-    output_function_chart = new Chart(document.getElementById('output_function'), output_function_config);
-    bode_ampl_chart = new Chart(document.getElementById('bode_ampl'), bode_ampl_chart_config);
-    bode_phase_chart = new Chart(document.getElementById('bode_phase'), bode_phase_chart_config);
+    // input_function_chart = new Chart(document.getElementById('input_function'), input_function_config);
+    // output_function_chart = new Chart(document.getElementById('output_function'), output_function_config);
+    bode_ampl_chart = new Chart(document.getElementById('bode_ampl'), bodeAmplitudeChartConfig);
+    bode_phase_chart = new Chart(document.getElementById('bode_phase'), bodePhaseChartConfig);
 }
 
 function savePreviousValue(e) {
@@ -70,6 +73,7 @@ function setupEvents()
     c_input.onkeyup = checkValueAndCalculate;
 
     function_input.onchange = checkValueAndCalculate;
+    solver_input.onchange = checkValueAndCalculate;
 }
 
 function loadDefaultValues()
@@ -117,6 +121,8 @@ function calculate()
     }
 
     const signalType = function_input.value;
+    const solverType = solver_input.value;
+
     const A = parseFloat(ampl_input.value);
     const F = parseFloat(freq_input.value);
 
@@ -125,45 +131,72 @@ function calculate()
     const L = parseFloat(l_input.value);
     const C = parseFloat(c_input.value);
 
-    var u, u1p;
+    let u, u1p;
 
     if (signalType === 'harmonic') {
-        u = sinFunction(total, A, F);
+        var x = sinFunction(total, A, F);
+        u = x.u;
+        u1p = x.u1p;
     } else if (signalType === 'triangle') {
-        u = triangleFunction(total, A, F);
+        var x  = triangleFunction(total, A, F);
+        u = x.u;
+        u1p = x.u1p;
     } else if (signalType === 'square') {
-        u = squareFunction(total, A, F);
+        let x = squareFunction(total, A, F);
+        u = x.u;
+        u1p = x.u1p;
+    } else if (signalType === 'heaviside') {
+        let x = heavisideFunction(total, A);
+        u = x.u;
+        u1p = x.u1p;
     }
-   
-    // OUTPUT FUNCTION
-    const b1 = 0;
-    const b0 = 1/(L*C);
+
+    // Transmittance coefficients
     const a2 = 1;
     const a1 = (R+R2)/(C*R*R2);
     const a0 = 1/(L*C);
+    const b1 = 0;
+    const b0 = 1/(L*C);
 
-    // var y = calculateOutput(u, -1/L, 1/C, -((R+R2)/(C*R*R2)), 1/L, 0, total, h);
+    var y;
+    
+    switch (solverType)
+    {
+        case 'taylor':
+            y = calculateTaylor(total, u, u1p, a2, a1, a0, b1, b0, h);
+            break;
+        case 'state':
+            y = calculateStateModel(u, 
+                math.matrix([
+                    [0, -1/L], 
+                    [1/C, ((-(R+R2))/(C*R*R2))]
+                ]), 
+            math.matrix([[1/L], [0]]),
+            math.matrix([0, 1]),
+            math.matrix([0]), 
+            total, h);
+            break;
+    }
 
-    var y = calculateOutput(u, 
-        math.matrix([
-            [0, 1], 
-            [(-1/(C*L)), (-(R+R2)/(C*R*R2))]
-        ]), 
-    math.matrix([[0], [1]]),
-    math.matrix([(1/(C*L)), 0]),
-    math.matrix([0]), 
-    total, h);
+    // Plot input and output function
+    const inputTrace = {
+        x: time,
+        y: u,
+        mode: 'lines',
+        name: 'Input Signal'
+    };
 
-    input_function_chart.data.labels = time;
-    input_function_chart.data.datasets[0].data = u;
-    input_function_chart.update();
+    const outputTrace = {
+        x: time,
+        y: y.toArray(),
+        mode: 'lines',
+        name: 'Output Signal'
+    };
 
-    console.log(y._data);
+    Plotly.newPlot('input_function', [inputTrace], inputChartConfig);
+    Plotly.newPlot('output_function', [outputTrace], outputChartConfig);
 
-    output_function_chart.data.labels = time;
-    output_function_chart.data.datasets[0].data = y.toArray();
-    output_function_chart.update();
-
+    // Calculate and plot bode diagrams
     const w = math.range(0, wmax + dw, dw).toArray();
     const { Aw, Fw } = bodePlot(w, b0, a2, a1, a0);
 
