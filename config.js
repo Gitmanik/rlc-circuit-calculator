@@ -1,5 +1,5 @@
 // Default calculator values
-var default_values = {
+var defaultInputValues = {
     r: 10,
     r2: 25,
     l: 0.5,
@@ -10,8 +10,8 @@ var default_values = {
 }
 
 // Bode plot settings
-const wmax = 20;
-const dw = 0.1;
+const omegaMax = 20;
+const dOmega = 0.1;
 
 //Output function settings
 const h = 0.01;
@@ -21,7 +21,6 @@ const T = 10.0;
 var bodeAmplitudeChartConfig = {
     type: 'line',
     data: {
-        labels: [],
         datasets: [
         {
             label: 'Amplitude [dB * 1000]',
@@ -47,12 +46,11 @@ var bodeAmplitudeChartConfig = {
                 // type: 'logarithmic'
             },
             y: {
-                beginAtZero: false, // Set this to false to start y-axis from the minimum value of the dataset
-                // type: 'logarithmic',
+                beginAtZero: false,
                 display: true,
                 position: 'right',
                 grid: {
-                    drawOnChartArea: false, // only want the grid lines for one axis to show up
+                    drawOnChartArea: false
                 }
             }
         }

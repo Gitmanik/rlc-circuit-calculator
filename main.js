@@ -1,13 +1,15 @@
-var input_function_chart;
-var output_function_chart;
-var bode_ampl_chart, bode_phase_chart;
+var inputFunctionChart;
+var outputFunctionChart;
+var bodeAmplitudeChart, bodePhaseChart;
 
-var r_input;
-var r2_input;
-var l_input;
-var c_input;
+var rInput;
+var r2Input;
+var lInput;
+var cInput;
+var amplitudeInput;
+var frequencyInput;
 
-var function_input, solver_input;
+var functionTypeInput, solverTypeInput;
 
 var previousValues = {};
 
@@ -22,20 +24,18 @@ window.addEventListener('load', async function()
 
 function loadGlobals()
 {
-    r_input = document.getElementById('R_input');
-    r2_input = document.getElementById('R2_input');
-    l_input = document.getElementById('L_input');
-    c_input = document.getElementById('C_input');
+    rInput = document.getElementById('R_input');
+    r2Input = document.getElementById('R2_input');
+    lInput = document.getElementById('L_input');
+    cInput = document.getElementById('C_input');
 
-    function_input = document.getElementById('Function_type');
-    solver_input = document.getElementById('Solver_type');
-    ampl_input = document.getElementById('Ampl_input');
-    freq_input = document.getElementById('Freq_input');
+    functionTypeInput = document.getElementById('Function_type');
+    solverTypeInput = document.getElementById('Solver_type');
+    amplitudeInput = document.getElementById('amplitudeInput');
+    frequencyInput = document.getElementById('frequencyInput');
     
-    // input_function_chart = new Chart(document.getElementById('input_function'), input_function_config);
-    // output_function_chart = new Chart(document.getElementById('output_function'), output_function_config);
-    bode_ampl_chart = new Chart(document.getElementById('bode_ampl'), bodeAmplitudeChartConfig);
-    bode_phase_chart = new Chart(document.getElementById('bode_phase'), bodePhaseChartConfig);
+    bodeAmplitudeChart = new Chart(document.getElementById('bode_ampl'), bodeAmplitudeChartConfig);
+    bodePhaseChart = new Chart(document.getElementById('bode_phase'), bodePhaseChartConfig);
 }
 
 function savePreviousValue(e) {
@@ -54,54 +54,54 @@ function checkValueAndCalculate(e) {
 
 function setupEvents()
 {
-    r_input.onkeydown = savePreviousValue;
-    r2_input.onkeydown = savePreviousValue;
-    l_input.onkeydown = savePreviousValue;
-    c_input.onkeydown = savePreviousValue;
-    c_input.onkeydown = savePreviousValue;
+    rInput.onkeydown = savePreviousValue;
+    r2Input.onkeydown = savePreviousValue;
+    lInput.onkeydown = savePreviousValue;
+    cInput.onkeydown = savePreviousValue;
+    cInput.onkeydown = savePreviousValue;
 
-    ampl_input.onkeydown = savePreviousValue;
-    freq_input.onkeydown = savePreviousValue;
+    amplitudeInput.onkeydown = savePreviousValue;
+    frequencyInput.onkeydown = savePreviousValue;
     
 
-    ampl_input.onkeyup = checkValueAndCalculate;
-    freq_input.onkeyup = checkValueAndCalculate;
+    amplitudeInput.onkeyup = checkValueAndCalculate;
+    frequencyInput.onkeyup = checkValueAndCalculate;
 
-    r_input.onkeyup = checkValueAndCalculate;
-    r2_input.onkeyup = checkValueAndCalculate;
-    l_input.onkeyup = checkValueAndCalculate;
-    c_input.onkeyup = checkValueAndCalculate;
+    rInput.onkeyup = checkValueAndCalculate;
+    r2Input.onkeyup = checkValueAndCalculate;
+    lInput.onkeyup = checkValueAndCalculate;
+    cInput.onkeyup = checkValueAndCalculate;
 
-    function_input.onchange = checkValueAndCalculate;
-    solver_input.onchange = checkValueAndCalculate;
+    functionTypeInput.onchange = checkValueAndCalculate;
+    solverTypeInput.onchange = checkValueAndCalculate;
 }
 
 function loadDefaultValues()
 {
-    r_input.value = default_values.r;
-    r2_input.value = default_values.r2;
-    l_input.value = default_values.l;
-    c_input.value = default_values.c;
+    rInput.value = defaultInputValues.r;
+    r2Input.value = defaultInputValues.r2;
+    lInput.value = defaultInputValues.l;
+    cInput.value = defaultInputValues.c;
 
-    ampl_input.value = default_values.ampl;
-    freq_input.value = default_values.freq;
+    amplitudeInput.value = defaultInputValues.ampl;
+    frequencyInput.value = defaultInputValues.freq;
 }
 
 function checkValues() {
-    if (isNaN(Number(r_input.value)) ||
-        isNaN(Number(r2_input.value)) ||
-        isNaN(Number(l_input.value)) ||
-        isNaN(Number(c_input.value)) ||
-        isNaN(Number(ampl_input.value)) ||
-        isNaN(Number(freq_input.value))
+    if (isNaN(Number(rInput.value)) ||
+        isNaN(Number(r2Input.value)) ||
+        isNaN(Number(lInput.value)) ||
+        isNaN(Number(cInput.value)) ||
+        isNaN(Number(amplitudeInput.value)) ||
+        isNaN(Number(frequencyInput.value))
         )
         return false;
 
-    const R = parseFloat(r_input.value);
-    const R2 = parseFloat(r2_input.value);
-    const L = parseFloat(l_input.value);
-    const C = parseFloat(c_input.value);
-    const F = parseFloat(freq_input.value);
+    const R = parseFloat(rInput.value);
+    const R2 = parseFloat(r2Input.value);
+    const L = parseFloat(lInput.value);
+    const C = parseFloat(cInput.value);
+    const F = parseFloat(frequencyInput.value);
 
     if (R == 0 || R2 == 0 || L == 0 || C == 0 || F == 0)
         return false;
@@ -120,16 +120,14 @@ function calculate()
         return;
     }
 
-    const signalType = function_input.value;
-    const solverType = solver_input.value;
-
-    const A = parseFloat(ampl_input.value);
-    const F = parseFloat(freq_input.value);
-
-    const R = parseFloat(r_input.value);
-    const R2 = parseFloat(r2_input.value);
-    const L = parseFloat(l_input.value);
-    const C = parseFloat(c_input.value);
+    const signalType = functionTypeInput.value;
+    const solverType = solverTypeInput.value;
+    const A = parseFloat(amplitudeInput.value);
+    const F = parseFloat(frequencyInput.value);
+    const R = parseFloat(rInput.value);
+    const R2 = parseFloat(r2Input.value);
+    const L = parseFloat(lInput.value);
+    const C = parseFloat(cInput.value);
 
     let u, u1p;
 
@@ -197,13 +195,13 @@ function calculate()
     Plotly.newPlot('output_function', [outputTrace], outputChartConfig);
 
     // Calculate and plot bode diagrams
-    const w = math.range(0, wmax + dw, dw).toArray();
+    const w = math.range(0, omegaMax + dOmega, dOmega).toArray();
     const { Aw, Fw } = bodePlot(w, b0, a2, a1, a0);
 
-    bode_ampl_chart.data.labels = w.map( x => x.toFixed(1));
-    bode_ampl_chart.data.datasets[0].data = Aw.map(x => math.multiply(x, 1000));
-    bode_ampl_chart.update();
-    bode_phase_chart.data.labels = w.map( x => x.toFixed(1));
-    bode_phase_chart.data.datasets[0].data = Fw.map(x => math.multiply(x, 1000));
-    bode_phase_chart.update();
+    bodeAmplitudeChart.data.labels = w.map( x => x.toFixed(1));
+    bodeAmplitudeChart.data.datasets[0].data = Aw.map(x => math.multiply(x, 1000));
+    bodeAmplitudeChart.update();
+    bodePhaseChart.data.labels = w.map( x => x.toFixed(1));
+    bodePhaseChart.data.datasets[0].data = Fw.map(x => math.multiply(x, 1000));
+    bodePhaseChart.update();
 }
