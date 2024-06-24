@@ -31,8 +31,8 @@ function loadGlobals()
 
     functionTypeInput = document.getElementById('Function_type');
     solverTypeInput = document.getElementById('Solver_type');
-    amplitudeInput = document.getElementById('amplitudeInput');
-    frequencyInput = document.getElementById('frequencyInput');
+    amplitudeInput = document.getElementById('Ampl_input');
+    frequencyInput = document.getElementById('Freq_input');
     
     bodeAmplitudeChart = new Chart(document.getElementById('bode_ampl'), bodeAmplitudeChartConfig);
     bodePhaseChart = new Chart(document.getElementById('bode_phase'), bodePhaseChartConfig);
